@@ -31,14 +31,17 @@ for kw in target_keywords:
     st.subheader(f"📍 {kw}")
     
     with st.spinner(f"'{kw}' 최신 소식 수집 중..."):
-        # real_estate.py에서 최신순으로 50개를 가져오도록 설정됨
+        # real_estate.py에서 데이터를 가져옴
         raw_results = get_blog_search_results(kw, display_count=50)
         
-        if raw_results:
+        if raw_results is not None:
             final_data = process_real_estate_data(raw_results)
             
-            # 일주일 이내 데이터만 필터링 (postdate가 일주일 전 날짜보다 크거나 같은 것만)
+            # 일주일 이내 데이터만 필터링
             weekly_data = [p for p in final_data if p['postdate'] >= one_week_ago_date]
+            
+            # [수정 포인트] 필터링된 데이터를 다시 한번 최신순(내림차순)으로 정렬
+            weekly_data.sort(key=lambda x: x['postdate'], reverse=True)
             
             if weekly_data:
                 st.success(f"최근 일주일 내 등록된 글: {len(weekly_data)}건")
